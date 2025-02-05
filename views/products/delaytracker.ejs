@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/styles/simple-datatables-v9.0.css">
+    <link rel="stylesheet" href="/public/styles/bootstrap.min.css">
+    <script src="/public/scripts/bootstrap.min.js" defer></script>
+    <script src="/public/scripts/http_helper.js"></script>
+    <script src="/public/scripts/simple-datatables-v9.0.js"></script>
+    <title>Delay Tracker</title>
+</head>
+<body class="bg-light">
+    <nav class="navbar shadow-sm bg-white">
+        <div class="container-fluid">
+          <div class="d-flex" role="search">
+            <select class="form-select form-select-lg me-2" id="mktp_select">
+                <option value="0">Marketplace</option>
+                <option value="1">Mercado Livre</option>
+                <option value="2">Shopee</option>
+                <!-- <option value="5">Shein</option>
+                <option value="3">Magalu</option> -->
+            </select>
+            <button class="btn btn-outline-primary" id="fetch_data_btn">Buscar</button>
+          </div>
+        </div>
+      </nav>
+    <div class="container-fluid p-3">
+        <ul class="nav nav-tabs bg-white shadow-sm rounded-top" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Atrasados</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Risco de Atraso</button>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active bg-white p-3 rounded-bottom-4 shadow-sm border border-top-0" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <div class="spinner-border text-danger" style="display: none;" id="spin_1" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <table class="table" id="late">
+                   <!--  <thead>
+                      <tr class="table-danger">
+                        <th scope="col">First</th>
+                        <th scope="col">Last</th>
+                        <th scope="col">Handle</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                      <tr>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                      </tr>
+                      <tr>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">Larry the Bird</td>
+                        <td>@twitter</td>
+                      </tr>
+                    </tbody> -->
+                  </table>
+            </div>
+            <div class="tab-pane fade bg-white p-3 rounded-bottom-4 shadow-sm border border-top-0" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <div class="spinner-border text-warning" style="display: none;" id="spin_2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <table class="table" id="in_risk">
+
+                </table>
+            </div>
+          </div>
+    </div>
+    <script>
+      const late = document.querySelector("#late");
+      const in_risk = document.querySelector("#in_risk");
+
+      const mktp_select = document.querySelector("#mktp_select");
+      const fetch_data_btn = document.querySelector("#fetch_data_btn");
+
+      const spin_1 = document.querySelector("#spin_1");
+      const spin_2 = document.querySelector("#spin_2");
+
+
+      async function main(mktp){
+        late.innerHTML = "";
+        in_risk.innerHTML = "";
+        spin_1.style.display = "inline-block";
+        spin_2.style.display = "inline-block";
+
+        let data = await fetchInfo(`/api/v1/delaytracker?marketplace=${mktp}`);
+        data = data.data;
+
+
+        let late_html =
+        `
+            <thead>
+                <tr class="table-danger">
+                    <th scope="col">ID</th>
+                    <th scope="col">PEDIDO</th>
+                    <th scope="col">SKU</th>
+                    <th scope="col">EMPRESA</th>
+                    <th scope="col">MARKETPLACE</th>
+                    <th scope="col">SEGMENTO</th>
+                    <th scope="col">DATA APROVAÇÃO</th>
+                    <th scope="col">DATA CORTE</th>
+                    <th scope="col">DATA ENVIO</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+        `;
+
+        
+        let in_risk_html =
+        `
+            <thead>
+                <tr class="table-warning">
+                    <th scope="col">ID</th>
+                    <th scope="col">PEDIDO</th>
+                    <th scope="col">SKU</th>
+                    <th scope="col">EMPRESA</th>
+                    <th scope="col">MARKETPLACE</th>
+                    <th scope="col">SEGMENTO</th>
+                    <th scope="col">DATA APROVAÇÃO</th>
+                    <th scope="col">DATA CORTE</th>
+                    <th scope="col">DATA ENVIO</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+        `;
+                
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+
+            if(element.is_late){
+                late_html += 
+                `
+                <tr>
+                    <td>${element.id}</td>
+                    <td>${element.order_id}</td>
+                    <td>${element.sku}</td>
+                    <td>${element.company}</td>
+                    <td>${element.marketplace}</td>
+                    <td>${element.segments_name}</td>
+                    <td>${corDate(element.approval_date)}</td>
+                    <td>${corDate(element.cutOffDate)}</td>
+                    <td>${corDate(element.shippingDate)}</td>
+                  </tr>
+                `;
+            }
+
+            if(element.in_risk){
+                in_risk_html += 
+                `
+                <tr>
+                    <td>${element.id}</td>
+                    <td>${element.order_id}</td>
+                    <td>${element.sku}</td>
+                    <td>${element.company}</td>
+                    <td>${element.marketplace}</td>
+                    <td>${element.segments_name}</td>
+                    <td>${corDate(element.approval_date)}</td>
+                    <td>${corDate(element.cutOffDate)}</td>
+                    <td>${corDate(element.shippingDate)}</td>
+                  </tr>
+                `;
+            }
+        }
+
+        late_html += "</tbody>";
+        in_risk_html += "</tbody>";
+
+        spin_1.style.display = "none";
+        spin_2.style.display = "none";
+
+        late.innerHTML = late_html;
+        in_risk.innerHTML = in_risk_html;
+
+        let dt_late = new simpleDatatables.DataTable("#late");
+        let dt_in_risk = new simpleDatatables.DataTable("#in_risk");
+      }
+
+      fetch_data_btn.addEventListener("click", async e => {
+          if(mktp_select.value == 0) return;
+
+          await main(mktp_select.value);
+      });
+        
+		function corDate(date){
+			if(!date) return "";
+
+			date = new Date(date)
+
+			// date.setHours(date.getHours() - 3, date.getMinutes(), date.getSeconds())
+
+			date = date.toISOString();
+
+			var newDate = date.split(".")[0]
+			newDate = newDate.split("T");
+
+			var day = newDate[0].split("-")
+			return `${day[2]}/${day[1]}/${day[0]} ${newDate[1]}`;
+		}
+    </script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+:root 
+{
+    --background: #f7f8fb;
+    --on_background: #ffffff;
+    --spacer: #c0c0c0;
+    --primary: #8ca5e2;
+    --primary_darker: #7a88c9;
+    --color-1: #f3bb6c;
+    --color-2: #e6889a;
+    --color-3: #78d378;
+    --color-4: #9581ee;
+    --color-5: #81cfb5;
+    --color-6: #bbbbbb;
+}
+
+*
+{
+    padding: 0;
+    margin: 0;
+    font-family: "Montserrat", serif;
+}
+
+body
+{
+    background-color: var(--background);
+    position: relative;
+}
+
+nav
+{
+    height: 4rem;
+    width: calc(100% - 2rem);
+    background-color: var(--on_background);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    /* padding: 1rem; */
+    padding: 0 1rem;
+}
+
+nav > div
+{
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    align-items: center;
+}
+
+
+
+
+
+.container
+{
+    width: 100%;
+    height: calc(100vh - 5rem);
+    display: grid;
+    grid-template-columns: 20% 50% 30%;
+    grid-template-rows: 100%;
+}
+
+.content
+{
+    /* background-color: var(--on_background); */
+    margin: 1rem 1rem 0 1rem;
+}
+
+.content.scroll
+{
+    overflow-y: auto;
+}
+
+.content.card 
+{
+    display: flex;
+    flex-direction: column;
+    font-family: "Montserrat", serif;
+    font-weight: 200;
+    border-radius: .5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background-color: var(--on_background);
+}
+
+.card-header
+{
+    padding: 1rem;
+    background-color: var(--color-1);
+    margin-bottom: 1rem;
+    color: var(--on_background);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header > i
+{
+    cursor: pointer;
+    transform: scale(1.9);
+    margin-right: .5rem;
+}
+
+.card-header > h2
+{
+    font-size: 1.2rem;
+}
+
+.card-body
+{
+    height: 100%;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+
+}
+
+.card-body.grid
+{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.card-body > textarea
+{
+    height: calc(100% - 1rem);
+    width: calc(100% - 1rem);
+    outline: 1px solid var(--spacer);
+    border: none;
+    border-radius: .5rem;
+    resize: none;
+    padding: .5rem;
+    font-size: 1rem;
+}
+
+.card-section
+{
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.btn
+{
+    padding: .6rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: .5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease-in-out;
+}
+
+.btn.primary
+{
+    background-color: var(--primary);
+    color: var(--on_background);
+}
+
+.btn.primary:hover
+{
+    background-color: var(--primary_darker);
+}
+
+.btn.primary:active
+{
+    transition: .1s ease-in-out;
+    background-color: var(--spacer);
+}
+
+.align-left
+{
+    display: flex;
+    justify-content: end;
+}
+
+.ct-card
+{
+    width: calc(100% - 2rem);
+    padding: 1rem;
+    background-color: var(--on_background);
+    border-radius: .5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.if-card
+{
+    display: flex;
+    flex-direction: column;
+    font-family: "Montserrat", serif;
+    font-weight: 200;
+    border-radius: .5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background-color: var(--on_background);
+}
+
+.spacer
+{
+    width: 100%;
+    height: 1px;
+    background-color: var(--spacer);
+    margin: 1rem 0;
+}
+
+.ct-card.image-grid
+{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.image-on-grid
+{
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Mantém a proporção quadrada */
+    overflow: hidden;
+}
+
+.image-on-grid > span
+{
+    position: absolute;
+    z-index: 1;
+    top: .5rem;
+    right: .5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+}
+
+.image-on-grid > span > i
+{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px solid white;
+    /* padding: .5rem; */
+    border-radius: 100%;
+    cursor: pointer;
+    width: 2rem; /* Define a largura fixa */
+    height: 2rem; /* Define a altura fixa */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s ease;
+}
+
+.image-on-grid > span > i:hover
+{
+    color: white;
+    background-color: #ffffff80;
+    border: 1px solid #ffffff80;
+}
+
+
+.image-on-grid img
+{
+    border-radius: .5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta a imagem para cobrir a div */
+    cursor: pointer;
+}
+
+.add-image
+{
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Mantém a proporção quadrada */
+    overflow: hidden;
+    background-color: var(--primary);
+    border-radius: .5rem;
+    cursor: pointer;
+    transition: .3s ease-in-out;
+}
+
+.add-image:hover
+{
+    background-color: var(--primary_darker);
+}
+
+.add-image > i
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    color: white;
+    font-size: 5rem;
+    transition: .1s ease-in-out;
+}
+
+.add-image:hover > i
+{
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.image-on-grid.large
+{
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.edit-inp
+{
+    display: flex;
+    align-items: center;
+}
+
+.edit-inp
+{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: .1rem;
+    color: var(--primary);
+}
+
+.edit-inp > input
+{
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.edit-inp > span
+{
+    cursor: pointer;
+}
+
+
+.edit-inp > i
+{
+    color: var(--primary);
+    margin-right: .2rem;
+}
+
+.edit-info
+{
+    display: flex;
+    align-items: center;
+}
+
+.edit-info > h3
+{
+    font-weight: 500;
+}
+
+.edit-info > i
+{
+    margin-left: .5rem;
+    cursor: pointer;
+    /* color: var(--primary); */
+}
+
+.color-1
+{
+    background-color: var(--color-1);
+    color: var(--on_background);
+}
+
+.color-2
+{
+    background-color: var(--color-2);
+    color: var(--on_background);
+}
+
+.color-3
+{
+    background-color: var(--color-3);
+    color: var(--on_background);
+}
+
+.color-4
+{
+    background-color: var(--color-4);
+    color: var(--on_background);
+}
+
+.color-5
+{
+    background-color: var(--color-5);
+    color: var(--on_background);
+}
+
+/* .size-card
+{
+    padding-bottom: 1rem;
+} */
+
+.size-card > div:nth-child(1)
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-6);
+    padding: .25rem .5rem;
+    border-radius: .5rem .5rem 0 0;
+    color: white;
+}
+
+
+.size-card > div:nth-child(1) > h4
+{
+    font-size: .9rem;
+}
+
+.size-card > div:nth-child(2)
+{
+    border: 1px solid var(--color-6);
+    border-radius: 0 0 .5rem .5rem;
+    padding: .5rem 0;
+}
+
+.size-card > div:nth-child(2) div
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 .5rem;
+}
+
+.size-card > div:nth-child(2) div span:nth-child(1)
+{
+    font-weight: 500;
+}
+
+.dir-card
+{
+    padding: 1rem;
+    border: 1px solid var(--spacer);
+    border-radius: .5rem;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.dir-card > span
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dir-card > p:nth-child(3)
+{
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+.dir-card > p:nth-child(4)
+{
+    width: calc(100% - 1rem);
+    background-color: var(--background);
+    padding: .5rem;
+    white-space: normal;
+    word-break: break-all;
+    font-weight: 300;
+}
+
+.tag-holder
+{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    
+}
+
+.tag-holder .tag
+{
+    border: 1px solid var(--color-6);
+    padding: .5rem;
+    color: var(--color-6);
+    border-radius: .5rem;
+    transition: .3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.tag:hover
+{
+    background-color: var(--color-6);
+    color: white;
+}
+
+.hover-container
+{
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    animation: black-fade .5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    display: none;
+}
+
+.img-display
+{
+
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.img-display > img
+{
+    height: 100%;
+    width: auto;
+}
+
+.img-display > button
+{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.hv-card
+{
+    width: 40%;
+    background-color: var(--on_background);
+    border-radius: .5rem;
+    overflow: hidden ;
+}
+
+.input-card
+{
+    position: relative;
+    width: calc(100% - 2rem);
+    border-radius: .5rem;
+    border: 1px solid var(--spacer);
+    padding: .6rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-card > input
+{
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.input-card > select
+{
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.inpt-title
+{
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+.info
+{
+    margin-bottom: 1rem;
+    background-color: var(--color-2);
+    padding: 1rem;
+    word-break: break-all;
+    border-radius: .5rem;
+}
+
+.notification
+{
+    position: fixed;
+    /* background-color: var(--color-6); */
+    right: 0;
+    bottom: 1rem;
+    overflow: hidden;
+    padding-right: 1rem;
+    z-index: 4;
+    animation: 5s show_notify;
+    display: none;
+}
+
+.notification > div
+{
+    background-color: var(--color-5);
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 15vw;
+    gap: 1rem;
+    border-radius: .5rem;
+    color: white;
+}
+
+.notification > div.succes
+{
+    background-color: var(--color-3);
+}
+
+.notification > div.error
+{
+    background-color: var(--color-6);
+}
+
+.notification > div > i
+{
+    font-size: 1.5rem;
+}
+
+/* .notification.show
+{
+    animation: 1s show_notify;
+}
+
+.notification.hide
+{
+    animation: 1s show_notify;
+} */
+
+@keyframes show_notify
+{
+    0%{
+        transform: translateX(100%);
+    }
+    10%{
+        transform: translateX(0);
+    }
+    90%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(100%);
+    }
+}
+
+@keyframes hide_notify
+{
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(100%);
+    }
+}
+
+@keyframes black-fade 
+{
+    0%{
+        opacity: 0%;
+    }
+    100%{
+        opacity: 100%;
+    }
+}
+
+@media only screen and (min-width: 1900px)
+{
+    body
+    {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .container
+    {
+        width: 70%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .container
+    { 
+        grid-template-columns: 100%;
+        grid-template-rows: auto auto auto;
+        /* grid-auto-rows: auto; */
+    }
+
+    
+    .container > div:nth-child(1)
+    {
+        grid-area: 2/1;
+        height: 20rem;
+    }
+
+    .container > div:nth-child(2)
+    {
+        grid-area: 1/1;
+    }
+
+    .content.scroll 
+    {
+        overflow: unset ;
+    }
+
+    .ct-card.image-grid
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .image-on-grid.large
+    {
+        grid-column: span 2;
+    }
+
+    .hv-card
+    {
+        width: calc(100% - 2rem);
+    }
+
+    .hover-container
+    {
+        position: fixed;
+    }
+
+    .img-display > img
+    {
+        height: auto;
+        width: 100%;
+    }
+
+    .notification > div
+    {
+        min-width: 50vw;
+    }
+    
+    .card-body.grid
+    {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+
+
+}

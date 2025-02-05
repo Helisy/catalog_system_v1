@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa</title>
+    <script src="https://kit.fontawesome.com/2f7352ec62.js" crossorigin="anonymous"></script>
+    <script src="/public/scripts/http_helper.js"></script>
+    <link rel="stylesheet" href="/public/styles/main.css">
+    <style>
+        .container-flex
+        {
+            /* background-color: red; */
+            width: 100%;
+            height: calc(100vh - 5rem);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .content
+        {   
+            width: 100%;
+        }
+
+        .search-bar
+        {
+            position: relative;
+            width: calc(100% - 2rem);
+            border-radius: .5rem;
+            border: 1px solid var(--spacer);
+            padding: .6rem 1rem;
+            display: flex;
+            align-items: center ;
+        }
+
+        .search-bar:focus-within
+        {
+            border: transparent;
+            outline: 3px solid var(--primary);
+        }
+
+        .search-bar > i
+        {
+            color: var(--spacer);
+            margin-right: 1rem;
+        }
+
+        .search-bar > input
+        {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .side-by
+        {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+        }
+
+        .result-grid
+        {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-card
+        {
+            background-color: var(--on_background);
+            border-radius: .5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .result-card > h2 > a
+        {
+            text-decoration: none;
+            color: black;
+        }
+
+        .tag-holder
+        {
+            overflow: scroll;
+        }
+
+        .tag-holder::-webkit-scrollbar {
+            display: none; /* Para navegadores baseados em WebKit, como o Chrome e Safari */
+        }
+
+        .pagination 
+        {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pagination button 
+        {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination button.active 
+        {
+            background-color: var(--color-2);
+            font-weight: bold;
+        }
+
+        .pagination button:disabled 
+        {
+            background-color: var(--spacer);
+            cursor: not-allowed;
+        }
+
+        @media only screen and (min-width: 1900px)
+        {
+            .container-flex
+            {
+                width: 70%;
+            }
+        }
+
+        @media only screen and (max-width: 600px)
+        {
+            .result-grid
+            {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-grid h2
+            {
+                font-size: .9rem;
+            }
+
+
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <button class="btn primary" onclick="window.location.href = '/products'">BUSCAR PRODUTOS</button>
+        </div>
+        <div>
+            <button class="btn primary" onclick="toggleHoverContainer('create_product')">ADICIONAR PRODUTO</button>
+        </div>
+    </nav>
+    <div class="notification" id="notification">
+        <div>
+            <i class="fa-solid fa-check"></i>
+            <div>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <div class="hover-container">
+        <div class="hv-card" id="create_product">
+            <div class="card-header color-4">
+                <h2>Criar SKU</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="info">
+                    <p>O SKU deve começar com duas a quatro letras seguidas por quatro números, e as variações devem ser separadas por um hífen ("-"). Exemplo: "XX0000-PTO".</p>
+                </div>
+                <div class="inpt-title">SKU</div>
+                <div class="input-card">
+                    <input type="text" id="create_sku_inpt" onkeyup="this.value = this.value.toUpperCase();"/>
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="createSKU()">CRIAR</button>
+            </div>
+        </div>
+    </div>
+    <div class="container-flex">
+        <div class="content">
+            <div class="ct-card side-by">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search_inpt" placeholder="Digite aqui...">
+                </div>
+                <button class="btn primary" id="search_btn">Buscar</button>
+            </div>
+            <div class="ct-card">
+                <h1 id="search_title">Resultado</h1>
+            </div>
+            <div class="result-grid" id="search_result">
+                <!-- <div class="result-card">
+                    <div class="image-on-grid">
+                        <img src="/public/image_storage/1737040095673-MOCK3.jpg">
+                    </div>
+                    <h2>CLA0145-ESP</h2>
+                    <div class="tag-holder" id="old_sku_holder">
+                        <span class="tag">
+                            EA0020-M
+                        </span>
+                    </div>
+                </div>                -->
+            </div>
+            <div class="ct-card" style="display: flex; align-items: center;">
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let buttonsToShow = 9;
+
+        function checkScreenWidth() {
+            if (window.innerWidth <= 600) {
+                console.log('A largura da tela é menor ou igual a 600px');
+                buttonsToShow = 5
+            }else{
+                buttonsToShow = 9
+            }
+        }
+
+        checkScreenWidth();
+        // window.addEventListener('resize', checkScreenWidth);
+
+        const search_btn = document.querySelector("#search_btn");
+        const search_inpt = document.querySelector("#search_inpt");
+        const search_title = document.querySelector("#search_title");    
+        const search_result = document.querySelector("#search_result");
+
+        const paginationContainer = document.getElementById('pagination');
+
+        const create_sku_inpt = document.querySelector("#create_sku_inpt");
+
+        const hover_container = document.querySelector(".hover-container");
+        hover_container.style.display = "none";
+        const hover_elements = 
+        {
+            create_product: document.querySelector("#create_product"), 
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentPage = parseInt(urlParams.get('page')) || 1;
+        let currentQuery = urlParams.get('query') || "";
+
+        function renderPagination() {
+            paginationContainer.innerHTML = '';
+
+            const firstPageButton = document.createElement('button');
+            firstPageButton.textContent = 'Início';
+            firstPageButton.disabled = currentPage === 1;
+            firstPageButton.onclick = () => {
+                currentPage = 1;
+                updateURL(currentPage, currentQuery);
+                renderPagination();
+            };
+            paginationContainer.appendChild(firstPageButton);
+
+            const halfRange = Math.floor(buttonsToShow / 2);
+            const startPage = Math.max(currentPage - halfRange, 1);
+
+            for (let i = 0; i < buttonsToShow; i++) {
+                const pageNumber = startPage + i;
+
+                const pageButton = document.createElement('button');
+                pageButton.textContent = pageNumber;
+
+                if (pageNumber === currentPage) {
+                    pageButton.classList.add('active');
+                }
+
+                pageButton.onclick = () => {
+                    currentPage = pageNumber;
+                    updateURL(currentPage, currentQuery);
+                    renderPagination();
+                };
+
+                paginationContainer.appendChild(pageButton);
+            }
+        }
+
+        function updateURL(page, query) {
+            const newURL = `${window.location.pathname}?page=${page}&query=${query}`;
+            window.history.pushState({ path: newURL }, '', newURL);
+            window.location.reload();
+        }
+
+        renderPagination();
+
+        search_btn.addEventListener('click', e => {
+            currentQuery = search_inpt.value;
+            currentPage = 1;
+            updateURL(currentPage, currentQuery);
+        });
+
+        search_inpt.addEventListener('keydown', e => {
+            if (event.key === 'Enter') {
+                currentQuery = search_inpt.value;
+                currentPage = 1;
+                updateURL(currentPage, currentQuery);
+            }
+        });
+
+        async function main() {
+
+            // if(currentQuery.length < 1){
+            //     search_title.innerHTML = "Resultado"
+            //     return;
+            // }
+
+            let data = await fetchInfo(`/api/v1/products?limit=50&order=asc&page=${currentPage}&query=${currentQuery}`);
+            data = data.data;
+
+            search_title.innerHTML = data.length < 1 ? `Nenhum resultado encontrado para "${currentQuery}"` : currentQuery
+
+           
+
+            let html = "";
+            for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+
+                element.images.sort((a, b) => b.is_main - a.is_main); 
+                
+                html+=
+                `
+                <div class="result-card">
+                    <div class="image-on-grid">
+                        <img src="${element.images.length < 1 ? "/public/images/no_image.jpg" : element.images[0].path}" onclick="window.location.href = '${"/products/" + element.sku}';">
+                    </div>
+                    <h2><a href="/products/${element.sku}">${element.sku}</a></h2>
+                    <p>${!element.description ? "" : element.description}</p>
+                    <div class="tag-holder" id="old_sku_holder">
+                        #TAGS#
+                    </div>
+                </div>           
+                `;
+
+                let tag_html = "";
+                let old_sku = !element.old_sku ? [] : element.old_sku.split(";");
+                for (let j = 0; j < old_sku.length; j++) {
+                    const tag = old_sku[j];
+                    
+                    tag_html +=
+                    `
+                    <span class="tag" onclick="window.location.href='/products?page=1&query=${tag}'">
+                        ${tag}
+                    </span>
+                    `;
+                }
+
+                html = html.replace("#TAGS#", tag_html);
+            }
+
+            search_result.innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        main();
+
+        function validateSKUNums(string) {
+            const regex = /\d/g;
+            const numerais = string.match(regex);
+            
+            return numerais && numerais.length > 3;
+        }
+
+        async function createSKU() {
+            const regex_ch_esp = /[^\w\s\-]/;
+
+            if(create_sku_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
+            if(!validateSKUNums(create_sku_inpt.value)) return pushNotify("error", "A contagem do SKU deve conter quatro numerais. EX: XX0000.");
+            if(regex_ch_esp.test(create_sku_inpt.value)) return pushNotify("error", 'O SKU não deve conter caracteres especiais, exceto "-".');
+
+            let response = await postData(`/api/v1/products`, "post", {
+                sku: create_sku_inpt.value,
+            });
+
+            switch (response.code) {
+                case 201:
+                    window.location.href = `/products/${create_sku_inpt.value}`;
+                    return;
+                case 400:
+                    pushNotify("error", response.message != "" ? response.message : "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        function pushNotify(type, message){ 
+            const icon = notification.querySelector("i");
+            const body = notification.querySelector("div");
+            const text = notification.querySelector("div > p");
+
+            switch (type) {
+                case "success":
+                    icon.className = "fa-solid fa-check";
+                    body.classList.add("success");
+                    body.classList.remove("error");
+                    break;
+                case "error":
+                    icon.className = "fa-solid fa-circle-exclamation";
+                    body.classList.remove("success");
+                    body.classList.add("error");
+                    break;
+                default:
+                    break;
+            }
+
+            text.innerHTML = message;
+            notification.style.display = "unset"
+        }
+
+        notification.onanimationend = () => {
+            notification.style.display = "none"
+        };  
+
+        function toggleHoverContainer(el_id){
+            if(hover_container.style.display == "none"){
+                hover_container.style.display = "flex";
+
+                for (const [key, value] of Object.entries(hover_elements)) {
+                
+                    if(key == el_id){
+                        value.style.display = "unset";
+                        continue;
+                    }
+
+                    value.style.display = "none";
+                }
+                
+            }else{
+                hover_container.style.display = "none";
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <script src="https://kit.fontawesome.com/2f7352ec62.js" crossorigin="anonymous"></script>
+    <script src="/public/scripts/http_helper.js"></script>
+    <link rel="stylesheet" href="/public/styles/main.css">
+
+</head>
+<body>
+    <nav>
+        <div>
+            <button class="btn primary" onclick="window.location.href = '/products'">BUSCAR PRODUTOS</button>
+        </div>
+        <div>
+            <button class="btn primary" onclick="toggleHoverContainer('create_product')">ADICIONAR PRODUTO</button>
+        </div>
+    </nav>
+    <div class="notification" id="notification">
+        <div>
+            <i class="fa-solid fa-check"></i>
+            <div>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <div class="hover-container">
+        <div class="hv-card" id="title_update">
+            <div class="card-header color-4">
+                <h2>ATUALIZAR SKU</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="info">
+                    <p>O SKU deve começar com duas a quatro letras seguidas por quatro números, e as variações devem ser separadas por um hífen ("-"). Exemplo: "XX0000-PTO".</p>
+                </div>
+                <div class="inpt-title">SKU</div>
+                <div class="input-card">
+                    <input type="text" id="sku_update_inpt" onkeyup="this.value = this.value.toUpperCase();"/>
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="updateSKU()">SALVAR</button>
+            </div>
+        </div>
+        <div class="hv-card" id="create_product">
+            <div class="card-header color-4">
+                <h2>Criar SKU</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="info">
+                    <p>O SKU deve começar com duas a quatro letras seguidas por quatro números, e as variações devem ser separadas por um hífen ("-"). Exemplo: "XX0000-PTO".</p>
+                </div>
+                <div class="inpt-title">SKU</div>
+                <div class="input-card">
+                    <input type="text" id="create_sku_inpt" onkeyup="this.value = this.value.toUpperCase();"/>
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="createSKU()">CRIAR</button>
+            </div>
+        </div>
+        <div class="hv-card" id="create_part">
+            <div class="card-header color-4">
+                <h2>ADICIONAR PEÇA E TAMANHO</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="info">
+                    <p>Os tamanhos devem estar em milímetros.</p>
+                </div>
+                <div class="inpt-title">TIPO</div>
+                <div class="input-card">
+                    <select id="part_type_select"></select>
+                </div>
+                <div class="inpt-title">ALTURA</div>
+                <div class="input-card">
+                    <input type="number" id="size_height_inpt">
+                </div>
+                <div class="inpt-title">LARGURA</div>
+                <div class="input-card">
+                    <input type="number" id="size_width_inpt">
+                </div>
+                <div class="inpt-title">EXTENSÃO (PROFUNDIDADE)</div>
+                <div class="input-card">
+                    <input type="number" id="size_deph_inpt">
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="addPartInfo()">SALVAR</button>
+            </div>
+        </div>
+        <div class="hv-card" id="create_directory">
+            <div class="card-header color-4">
+                <h2>ADICIONAR DIRETÓRIO</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="input-card">
+                    <select id="directory_type_select"></select>
+                </div>
+                <div class="inpt-title">Descrição</div>
+                <div class="input-card">
+                    <input type="text" id="description_dir_inpt">
+                </div>
+                <div class="inpt-title">Diretório (Pasta ou Arquivo)</div>
+                <div class="input-card">
+                    <input type="text" id="directory_inp">
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="addDirectory()">SALVAR</button>
+            </div>
+        </div>
+        <div class="hv-card" id="add_tag">
+            <div class="card-header color-4">
+                <h2>ADICIONAR SKU ANTIGO DE REFERÊNCIA</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="inpt-title">SKU ANTIGO</div>
+                <div class="input-card">
+                    <input type="text" id="old_sku_inpt">
+                </div>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="addOldSku()">SALVAR</button>
+            </div>
+        </div>
+        <div class="hv-card" id="update_description">
+            <div class="card-header color-4">
+                <h2>EDITAR DESCRIÇÃO</h2>
+                <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
+            </div>
+            <div class="card-body">
+                <div class="info">
+                    <p>A descrição é destinada apenas ao motor de busca.</p>
+                </div>
+                <div class="inpt-title">DESCRIÇÃO</div>
+                <div class="input-card">
+                    <input type="text" id="description_inpt">
+                </div>
+                <input type="file" id="input_image" style="display: none;">
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="updateDescription()">SALVAR</button>
+            </div>
+        </div>
+        <div class="img-display" id="img_display">
+            <button class="btn primary" onclick="toggleHoverContainer()">FECHAR</button>
+            <img id="display-image">
+        </div>
+    </div>
+    <div class="container">
+        <div class="content card">
+            <div class="card-header">
+                <h2>OBSERVAÇÃO</h2>
+            </div>
+            <div class="card-body">
+                <textarea id="observation"></textarea>
+            </div>
+            <div class="card-section align-left">
+                <button class="btn primary" onclick="updateObservation()">SALVAR</button>
+            </div>
+        </div>
+        <div class="content scroll">
+            <div class="ct-card">
+                <div class="main-title">
+                    <span class="edit-info"><h1 id="page_sku">CLA0145-ESP</h1><i class="fa-solid fa-pencil" onclick="toggleHoverContainer('title_update')"></i></span>
+                    <br>
+                    <div class="tag-holder" id="old_sku_holder">
+                        <!-- <span class="tag">
+                            EA0020-M
+                            <i class="fa-solid fa-xmark"></i>
+                        </span>
+                        <span class="tag">
+                            <i class="fa-solid fa-plus"></i>
+                        </span> -->
+                    </div>
+                </div>
+                <div class="spacer"></div>
+                <div id="product_id_holder" style="display: none;"></div>
+                <span class="edit-info">
+                    <p id="description">Espelho Acrilico Gato Sentado</p>
+                    <i class="fa-solid fa-pencil" onclick="toggleHoverContainer('update_description')"></i>
+                </span>
+                <!-- <div class="edit-inp">
+                    <input type="text" placeholder="Escreva aqui...">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Salvar</span>
+                </div> -->
+            </div>
+            <div class="ct-card image-grid" id="image_holder" accept="image/*">
+                <!-- <div class="image-on-grid large">
+                    <span>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </span>
+                    <img src="/public/image_storage/1737039127147-MOCK1.3.jpg" onclick="showImage(this, 'img_display')">
+                </div>
+                <div class="image-on-grid">
+                    <span>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </span>
+                    <img src="/public/image_storage/1737040092908-MOCK3.jpg" onclick="showImage(this, 'img_display')">
+                </div>
+                <div class="image-on-grid">
+                    <span>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </span>
+                    <img src="/public/image_storage/1737040092908-MOCK3.jpg" alt="">
+                </div>
+                <div class="image-on-grid">
+                    <span>
+                        <i class="fa-regular fa-star"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </span>
+                    <img src="/public/image_storage/1737040092908-MOCK3.jpg" alt="">
+                </div>
+                <div class="add-image">
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div> -->
+                
+            </div>
+        </div>
+        <div class="content scroll">
+            <div class="if-card">
+                <div class="card-header color-4">
+                    <h2>PEÇAS E TAMANHOS</h2>
+                    <i class="fa-solid fa-circle-plus" onclick="toggleHoverContainer('create_part')"></i>
+                </div>
+                <div class="card-body grid" id="size_info_holder">
+                    <!-- <div class="size-card">
+                        <div>
+                            <h4>Produto Final</h4>
+                            <i class="fa-solid fa-trash"></i>
+                        </div>
+                        <div>
+                            <div>
+                                <span>Altura</span>
+                                <span>500mm</span>
+                            </div>
+                            <div>
+                                <span>Largura</span>
+                                <span>500mm</span>
+                            </div>
+                            <div>
+                                <span>Extensão</span>
+                                <span>500mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="size-card">
+                        <div>
+                            <h4>Subpeça</h4>
+                            <i class="fa-solid fa-trash"></i>
+                        </div>
+                        <div>
+                            <div>
+                                <span>Altura</span>
+                                <span>500mm</span>
+                            </div>
+                            <div>
+                                <span>Largura</span>
+                                <span>500mm</span>
+                            </div>
+                            <div>
+                                <span>Extensão</span>
+                                <span>500mm</span>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <div class="if-card">
+                <div class="card-header color-2">
+                    <h2>PASTAS</h2>
+                    <i class="fa-solid fa-circle-plus" onclick="toggleHoverContainer('create_directory')"></i>
+                </div>
+                <div class="card-body" id="directory_holder">
+                    <!-- <div class="dir-card">
+                        <span>
+                            <h3>Anúncios</h3>
+                            <i class="fa-solid fa-trash"></i>
+                        </span>
+                        <div class="spacer"></div>
+                        <p>Drive - Artes Antigas</p>
+                        <p>H:/Meu Drive/1.DELIQUADROS/1.PRODUTOS/ESPELHOS/EA0024 - ESPIRAL</p>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+
+        const hover_container = document.querySelector(".hover-container");
+        hover_container.style.display = "none";
+
+        const display_image = document.querySelector("#display-image");
+
+        const page_sku = document.querySelector("#page_sku");
+        const old_sku_holder = document.querySelector("#old_sku_holder");
+        const description = document.querySelector("#description");
+        const image_holder = document.querySelector("#image_holder");
+        const size_info_holder = document.querySelector("#size_info_holder");
+        const directory_holder = document.querySelector("#directory_holder");
+        const observation = document.querySelector("#observation");
+        const sku_update_inpt = document.querySelector("#sku_update_inpt");
+        const old_sku_inpt = document.querySelector("#old_sku_inpt");
+        const description_inpt = document.querySelector("#description_inpt");
+        const size_height_inpt = document.querySelector("#size_height_inpt");
+        const size_width_inpt = document.querySelector("#size_width_inpt");
+        const size_deph_inpt = document.querySelector("#size_deph_inpt");
+        const part_type_select = document.querySelector("#part_type_select");
+        const directory_type_select = document.querySelector("#directory_type_select");
+        const description_dir_inpt = document.querySelector("#description_dir_inpt");
+        const directory_inp = document.querySelector("#directory_inp");
+        const create_sku_inpt = document.querySelector("#create_sku_inpt");
+
+        const product_id_holder = document.querySelector("#product_id_holder");
+
+        const product_param = window.location.pathname.slice(1).split("/")[1]
+
+        const notification = document.querySelector("#notification");
+
+        const input_image = document.querySelector("#input_image");
+   
+
+
+        const hover_elements = 
+        {
+            create_product: document.querySelector("#create_product"), 
+            img_display: document.querySelector("#img_display"),
+            title_update: document.querySelector("#title_update"),
+            create_part: document.querySelector("#create_part"),
+            create_directory: document.querySelector("#create_directory"),
+            add_tag: document.querySelector("#add_tag"), 
+            update_description: document.querySelector("#update_description"), 
+        }
+
+        function toggleHoverContainer(el_id){
+            if(hover_container.style.display == "none"){
+                hover_container.style.display = "flex";
+
+                for (const [key, value] of Object.entries(hover_elements)) {
+                
+                    if(key == el_id){
+                        value.style.display = "unset";
+                        continue;
+                    }
+
+                    value.style.display = "none";
+                }
+                
+            }else{
+                hover_container.style.display = "none";
+            }
+        }
+
+        function showImage(e, el_id)
+        {
+            toggleHoverContainer(el_id);        
+            display_image.src = e.src;
+        }
+
+        async function main() {
+            let data = await fetchInfo(`/api/v1/products/${product_param}`);
+            data = data.data;
+
+            product_id_holder.innerHTML = data.id;
+
+            let part_types = await fetchInfo(`/api/v1/products/part-types`);
+            part_types = part_types.data;
+
+            let dir_types = await fetchInfo(`/api/v1/products/directory-types`);
+            dir_types = dir_types.data;
+
+            
+            part_type_select.innerHTML = `<option value="0">Selecione</option>`
+            for (const element of part_types) {
+                part_type_select.innerHTML += `<option value="${element.id}">${element.label}</option>`;
+            }
+            
+            directory_type_select.innerHTML = `<option value="0">Selecione</option>`
+            for (const element of dir_types) {
+                directory_type_select.innerHTML += `<option value="${element.id}">${element.label}</option>`;
+            }
+           
+
+            page_sku.innerHTML = data.sku;
+            description.innerHTML = data.description;
+            description_inpt.value = data.description;
+            observation.value = data.observation;
+
+            let old_sku = "";
+            let old_sku_tags = !data.old_sku ? [] : data.old_sku.split(";");
+
+            for (const element of old_sku_tags) {
+                old_sku +=
+                `
+                <span class="tag">
+                    <span onclick="window.location.href='/products?page=1&query=${element}'">${element}</span>
+                    <i class="fa-solid fa-xmark" onclick="removeOldSku('${element}')"></i>
+                </span>
+                `;
+            }
+
+            old_sku +=
+            `
+            <span class="tag" onclick="toggleHoverContainer('add_tag')">
+                <i class="fa-solid fa-plus"></i>
+            </span>
+            `;
+
+            old_sku_holder.innerHTML = old_sku;
+
+
+            data.images.sort((a, b) => b.is_main - a.is_main); 
+
+            let image_html = "";
+
+            for (let i = 0; i < data.images.length; i++) {
+                const image = data.images[i];
+                
+                image_html +=
+                `
+                <div class="image-on-grid ${image.is_main == 1 ? "large" : ""}">
+                    <span>
+                        <i class="${image.is_main == 1 ? "fa-solid" : "fa-regular"} fa-star" onclick="makeImageMain(${image.id})"></i>
+                        <i class="fa-solid fa-trash" onclick="removeImage(${image.id})"></i>
+                    </span>
+                    <img src="${image.path}" onclick="showImage(this, 'img_display')">
+                </div>
+                `;
+            }
+
+            image_html +=
+            `
+            <div class="add-image" onclick="addImage()">
+                <i class="fa-solid fa-circle-plus"></i>
+            </div>
+            `;
+
+            image_holder.innerHTML = image_html;
+
+
+            size_info_html = "";
+            for (const element of data.parts) {
+                size_info_html +=
+                `
+                <div class="size-card">
+                    <div>
+                        <h4>${element.part_type}</h4>
+                        <i class="fa-solid fa-trash" onclick="deletePartInfo(${element.id})"></i>
+                    </div>
+                    <div>
+                        <div>
+                            <span>Altura</span>
+                            <span>${element.height} mm</span>
+                        </div>
+                        <div>
+                            <span>Largura</span>
+                            <span>${element.width} mm</span>
+                        </div>
+                        <div>
+                            <span>Extensão</span>
+                            <span>${element.depth} mm</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            size_info_holder.innerHTML = size_info_html;
+
+
+            directory_html = "";
+            for (const element of data.directories) {
+                directory_html += 
+                `
+                    <div class="dir-card">
+                        <span>
+                            <h3>${element.directory_type}</h3>
+                            <i class="fa-solid fa-trash" onclick="deleteDirectory(${element.id})"></i>
+                        </span>
+                        <div class="spacer"></div>
+                        <p>${element.label}</p>
+                        <p>${element.path.replaceAll("\\\\", "\\")}</p>
+                    </div>
+                `;
+            }
+
+            directory_holder.innerHTML = directory_html;
+        }
+
+        function pushNotify(type, message){ 
+            const icon = notification.querySelector("i");
+            const body = notification.querySelector("div");
+            const text = notification.querySelector("div > p");
+
+            switch (type) {
+                case "success":
+                    icon.className = "fa-solid fa-check";
+                    body.classList.add("success");
+                    body.classList.remove("error");
+                    break;
+                case "error":
+                    icon.className = "fa-solid fa-circle-exclamation";
+                    body.classList.remove("success");
+                    body.classList.add("error");
+                    break;
+                default:
+                    break;
+            }
+
+            text.innerHTML = message;
+            notification.style.display = "unset"
+        }
+
+        notification.onanimationend = () => {
+            notification.style.display = "none"
+        };  
+
+        async function updateObservation() {
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}`, "put", {
+                observation: observation.value,
+            });
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    pushNotify("success", "Observação atualizada com sucesso!");
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        function validateSKUNums(string) {
+            const regex = /\d/g;
+            const numerais = string.match(regex);
+            
+            return numerais && numerais.length > 3;
+        }
+
+        async function createSKU() {
+            const regex_ch_esp = /[^\w\s\-]/;
+
+            if(create_sku_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
+            if(!validateSKUNums(create_sku_inpt.value)) return pushNotify("error", "A contagem do SKU deve conter quatro numerais. EX: XX0000.");
+            if(regex_ch_esp.test(create_sku_inpt.value)) return pushNotify("error", 'O SKU não deve conter caracteres especiais, exceto "-".');
+
+            let response = await postData(`/api/v1/products`, "post", {
+                sku: create_sku_inpt.value,
+            });
+
+            switch (response.code) {
+                case 201:
+                    window.location.href = `/products/${create_sku_inpt.value}`;
+                    return;
+                case 400:
+                    pushNotify("error", response.message != "" ? response.message : "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function updateSKU() {
+            const regex_ch_esp = /[^\w\s\-]/;
+
+            if(sku_update_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
+            if(!validateSKUNums(sku_update_inpt.value)) return pushNotify("error", "A contagem do SKU deve conter quatro numerais. EX: XX0000.");
+            if(regex_ch_esp.test(sku_update_inpt.value)) return pushNotify("error", 'O SKU não deve conter caracteres especiais, exceto "-".');
+
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}`, "put", {
+                sku: sku_update_inpt.value,
+            });
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    pushNotify("success", "SKU alterado com sucesso");
+                    toggleHoverContainer();
+                    sku_update_inpt.value = "";
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function addOldSku() {
+
+            if(old_sku_inpt.value.length < 2) return pushNotify("error", "Este campo requer pelo menos 2 caracteres.")
+
+            let ch = Array.from(old_sku_holder.children);
+            
+            ch = ch.map(e => { return e.children[0].innerHTML; });
+            ch = ch.filter(e => { return e != ""; });
+
+            ch.push(old_sku_inpt.value);
+
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}`, "put", {
+                old_sku: ch.join(";"),
+            });
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    toggleHoverContainer();
+                    old_sku_inpt.value = "";
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function removeOldSku(value) {
+
+            let ch = Array.from(old_sku_holder.children);
+            
+            ch = ch.map(e => { return e.children[0].innerHTML; });
+            ch = ch.filter(e => { return e != ""; });
+            ch = ch.filter(e => { return e != value; });
+
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}`, "put", {
+                old_sku: ch.join(";"),
+            });
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function updateDescription() {
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}`, "put", {
+                description: description_inpt.value,
+            });
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    pushNotify("success", "Descrição atualizada com sucesso");
+                    toggleHoverContainer();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+        
+        input_image.addEventListener('change', async (e) => {
+            const image_file = e.target.files[0];
+            if (!image_file) return pushNotify("error", "Selecione uma imagem!")
+
+            switch (true) {
+                case image_file.name.includes(".jpeg"):
+                    break;
+                case image_file.name.includes(".jpg"):
+                    break;
+                case image_file.name.includes(".png"):
+                    break;
+                default:
+                    pushNotify("error", "Selecione uma imagem!");
+                    return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', image_file);
+
+            fetch(`/api/v1/products/${product_id_holder.innerHTML}/image`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                main();
+            })
+            .catch(error => {
+
+                pushNotify("error", "Erro!")
+                console.error(error);
+            });
+        });
+
+        function addImage() {
+            input_image.click();
+        }
+
+        async function removeImage(image_id) {
+            let response = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}/image/${image_id}`, "delete");
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function makeImageMain(image_id) {
+            let response = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}/image/${image_id}`, "put");
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function addPartInfo() {
+
+            if(part_type_select.value == "0") return pushNotify("error", "Selecione um tipo!");
+            if(size_width_inpt.value == 0) return pushNotify("error", "O valor tem que ser maior que zero!");
+            if(size_height_inpt.value == 0) return pushNotify("error", "O valor tem que ser maior que zero!");
+            if(size_deph_inpt.value == 0) return pushNotify("error", "O valor tem que ser maior que zero!");
+
+
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}/parts`, "post", {
+                width: size_width_inpt.value,
+                height: size_height_inpt.value,
+                depth: size_deph_inpt.value,
+                part_type_id: parseInt(part_type_select.value),
+            });
+
+            switch (response.code) {
+                case 201:
+                    await main();
+                    pushNotify("success", "Entrada registrada com sucesso");
+                    toggleHoverContainer();
+                    size_width_inpt.value = "";
+                    size_height_inpt.value = "";
+                    size_deph_inpt.value = "";
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function deletePartInfo(part_id){
+            let response = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}/parts/${part_id}`, "delete");
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        function validateDirectory(diretorio) {
+            const regexWindows = /^[A-Za-z]:\\(?:[^\\\/:*?"<>|]*\\)*[^\\\/:*?"<>|]*$/;
+            const regexUnix = /^(\/[a-zA-Z0-9-_]+)+\/?$/;
+            const regexRedeWindows = /^\\\\[a-zA-Z0-9._-]+\\(?:[^\\\/:*?"<>|]*\\)*[^\\\/:*?"<>|]*$/;
+            const regexRedeUnix = /^\/\/[a-zA-Z0-9._-]+(?:\/[a-zA-Z0-9-_]+)+\/?$/;
+
+            if (regexWindows.test(diretorio)) {
+                return true;
+            } else if (regexUnix.test(diretorio)) {
+                return true;
+            } else if (regexRedeWindows.test(diretorio)) {
+                return true;
+            } else if (regexRedeUnix.test(diretorio)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        async function addDirectory() {
+
+            if(directory_type_select.value == "0") return pushNotify("error", "Selecione um tipo!");
+            if(!validateDirectory(directory_inp.value)) return pushNotify("error", "Diretório Invalido");
+            if(description_dir_inpt.value.length < 5) return pushNotify("error", "Descrição muito curta!");
+
+            let response = await postData(`/api/v1/products/${product_id_holder.innerHTML}/directories`, "post", {
+                path: directory_inp.value.replaceAll("\\", "\\\\"),
+                label: description_dir_inpt.value,
+                directory_type_id: parseInt(directory_type_select.value)
+            });
+
+            switch (response.code) {
+                case 201:
+                    await main();
+                    pushNotify("success", "Entrada registrada com sucesso");
+                    toggleHoverContainer();
+                    directory_inp.value = "";
+                    description_dir_inpt.value = "";
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        async function deleteDirectory(dir_id){
+            let response = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}/directories/${dir_id}`, "delete");
+
+            switch (response.code) {
+                case 200:
+                    await main();
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        main()
+
+    </script>
+</body>
+</html>
