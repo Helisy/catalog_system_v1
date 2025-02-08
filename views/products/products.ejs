@@ -7,7 +7,9 @@
     <script src="https://kit.fontawesome.com/2f7352ec62.js" crossorigin="anonymous"></script>
     <script src="/public/scripts/http_helper.js"></script>
     <link rel="stylesheet" href="/public/styles/main.css">
-
+    <style>
+        
+    </style>
 </head>
 <body>
     <nav>
@@ -333,6 +335,8 @@
    
 
 
+
+
         const hover_elements = 
         {
             create_product: document.querySelector("#create_product"), 
@@ -423,7 +427,17 @@
 
             data.images.sort((a, b) => b.is_main - a.is_main); 
 
-            let image_html = "";
+            let image_html = 
+            `
+                <div class="drag-image" id="drag_image">
+                    <h3>Envie uma imagem:</h3>
+                    <div>
+                        <i class="fa-solid fa-image"></i>
+                         <h3>Drag & Drop</h3>
+                         <p>JPEG JPG PNG</p>
+                    </div>
+                </div>
+            `;
 
             for (let i = 0; i < data.images.length; i++) {
                 const image = data.images[i];
@@ -497,7 +511,86 @@
             }
 
             directory_holder.innerHTML = directory_html;
+            imageHover();
         }
+
+
+
+        function imageHover(){
+            const drag_image = document.querySelector("#drag_image");
+
+            const setEnter = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                drag_image.classList.add('dragover');
+            }
+
+            const setHover = e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            const setLeave = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                drag_image.classList.remove('dragover');
+            }
+
+            const setDrop = e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                drag_image.classList.remove('dragover');
+
+                const file = e.dataTransfer.files;
+                
+                if(!file.length > 0) return;
+
+                switch (true) 
+                {
+                    case file[0].name.includes(".jpeg"):
+                        break;
+                    case file[0].name.includes(".jpg"):
+                        break;
+                    case file[0].name.includes(".png"):
+                        break;
+                    default:
+                        pushNotify("error", "Selecione uma imagem!");
+                        return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file[0]);
+
+                fetch(`/api/v1/products/${product_id_holder.innerHTML}/image`, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    main();
+                })
+                .catch(error => {
+
+                    pushNotify("error", "Erro!")
+                    console.error(error);
+                });
+            }
+
+            // image_holder.removeEventListener('dragenter', setEnter);
+            // image_holder.removeEventListener('dragenter', setHover);
+            // drag_image.removeEventListener('dragleave', setLeave);
+
+            image_holder.addEventListener('dragover', setEnter);
+            image_holder.addEventListener('dragover', setHover);
+            drag_image.addEventListener('dragleave', setLeave);
+            drag_image.addEventListener('drop', setDrop);
+
+
+
+           
+        }
+
 
         function pushNotify(type, message){ 
             const icon = notification.querySelector("i");
@@ -681,6 +774,7 @@
         
         input_image.addEventListener('change', async (e) => {
             const image_file = e.target.files[0];
+            console.log(image_file)
             if (!image_file) return pushNotify("error", "Selecione uma imagem!")
 
             switch (true) {

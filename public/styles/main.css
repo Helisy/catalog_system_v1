@@ -210,7 +210,56 @@ nav > div
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
+    position: relative;
 }
+
+
+.ct-card.image-grid .drag-image
+{
+    width: calc(100% - 2rem);
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    border-radius: .5rem;
+    padding: 1rem;
+    background-color: var(--on_background);
+    display: none;
+}
+
+.ct-card.image-grid .drag-image > div
+{
+    height: calc(100% - 2rem);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background);
+    border: 1px dashed var(--primary);
+    margin-top: .5rem;
+    /* gap: .5rem; */
+    border-radius: .5rem;
+}
+
+.ct-card.image-grid .drag-image > div > i
+{
+    font-size: 5rem;
+    color: var(--primary);
+}
+
+.ct-card.image-grid .drag-image > div > p
+{
+    font-size: .8rem;
+}
+
+
+.ct-card.image-grid .drag-image.dragover
+{
+    display: flex;
+    flex-direction: column;
+}
+
+
 
 .image-on-grid
 {
