@@ -9,6 +9,7 @@
     --primary_darker: #7a88c9;
     --color-1: #f3bb6c;
     --color-2: #e6889a;
+    --color-2_darker: #b86f7f;
     --color-3: #78d378;
     --color-4: #9581ee;
     --color-5: #81cfb5;
@@ -166,6 +167,23 @@ nav > div
 {
     transition: .1s ease-in-out;
     background-color: var(--spacer);
+}
+
+.btn.color-2
+{
+    background-color: var(--color-2);
+    color: var(--on_background);
+}
+
+.btn.color-1:hover
+{
+    background-color: var(--color-2_darker);
+}
+
+.btn.color-1:active
+{
+    transition: .1s ease-in-out;
+    background-color:  var(--spacer);
 }
 
 .align-left

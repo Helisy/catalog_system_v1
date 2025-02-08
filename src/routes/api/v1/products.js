@@ -370,6 +370,38 @@ router.put('/:id', checkSchema(putProductsValidation), async (req, res) => {
     );
 });
 
+router.delete('/:id', param('id').isInt(), async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        await checkExistence([
+            {
+                id: id,
+                table: "products",
+                field: "params 'id'"
+            },
+        ])
+    } catch (error) {
+        return apiClientError(req, res, error, error.message, 400)
+    }
+
+    try {
+        await db.query(`update products set deleted_at = now() where id = ?`, [id]);
+    } catch (error) {
+        return apiServerError(req, res, error);
+    }
+
+    res.status(200).json(
+        {
+            method: req.method,
+            error: false,
+            code: 200,
+            message: "Prouct deleted successfully",
+            data: [],
+        }
+    );
+});
+
 router.post('/:id/image', param('id').isInt(), upload.single('file'), async (req, res) => {
     const id = req.params.id;
 

@@ -180,7 +180,7 @@
                 </div>
             </div>
             <div class="card-section align-left">
-                <button class="btn primary" onclick="createSKU()">CRIAR</button>
+                <button class="btn primary" onclick="createSKU(this)">CRIAR</button>
             </div>
         </div>
     </div>
@@ -370,7 +370,9 @@
             return numerais && numerais.length > 3;
         }
 
-        async function createSKU() {
+        async function createSKU(e) {
+            e.disabled = true;
+
             const regex_ch_esp = /[^\w\s\-]/;
 
             if(create_sku_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
@@ -384,12 +386,15 @@
             switch (response.code) {
                 case 201:
                     window.location.href = `/products/${create_sku_inpt.value}`;
+                    e.disabled = false;
                     return;
                 case 400:
                     pushNotify("error", response.message != "" ? response.message : "Client Error")
+                    e.disabled = false;
                     return;
                 case 500:
                     pushNotify("error", "Server Error")
+                    e.disabled = false;
                     return;
             }
         }

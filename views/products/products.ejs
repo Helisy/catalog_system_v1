@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="card-section align-left">
-                <button class="btn primary" onclick="createSKU()">CRIAR</button>
+                <button class="btn primary" onclick="createSKU(this)">CRIAR</button>
             </div>
         </div>
         <div class="hv-card" id="create_part">
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div class="card-section align-left">
-                <button class="btn primary" onclick="addPartInfo()">SALVAR</button>
+                <button class="btn primary" onclick="addPartInfo(this)">SALVAR</button>
             </div>
         </div>
         <div class="hv-card" id="create_directory">
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="card-section align-left">
-                <button class="btn primary" onclick="addDirectory()">SALVAR</button>
+                <button class="btn primary" onclick="addDirectory(this)">SALVAR</button>
             </div>
         </div>
         <div class="hv-card" id="add_tag">
@@ -194,6 +194,12 @@
                     <i class="fa-solid fa-circle-check"></i>
                     <span>Salvar</span>
                 </div> -->
+               
+                <div id="admin_panel">
+                    <div class="spacer"></div>
+                    <button class="btn primary" onclick="duplicateProduct(this);">Criar  Igual</button>
+                    <button class="btn color-2" onclick="deleteProduct()">Deletar Produto</button>
+                </div>
             </div>
             <div class="ct-card image-grid" id="image_holder" accept="image/*">
                 <!-- <div class="image-on-grid large">
@@ -333,9 +339,8 @@
 
         const input_image = document.querySelector("#input_image");
    
-
-
-
+        const admin_panel = document.querySelector("#admin_panel");
+        admin_panel.style.display = "none";
 
         const hover_elements = 
         {
@@ -510,6 +515,13 @@
                 `;
             }
 
+            const is_admin = localStorage.getItem('is_admin');
+            if(is_admin == "true"){
+                admin_panel.style.display = "unset";
+            }else{
+                admin_panel.style.display = "none";
+            }
+
             directory_holder.innerHTML = directory_html;
             imageHover();
         }
@@ -585,10 +597,6 @@
             image_holder.addEventListener('dragover', setHover);
             drag_image.addEventListener('dragleave', setLeave);
             drag_image.addEventListener('drop', setDrop);
-
-
-
-           
         }
 
 
@@ -646,7 +654,9 @@
             return numerais && numerais.length > 3;
         }
 
-        async function createSKU() {
+        async function createSKU(e) {
+            e.disabled = true;
+
             const regex_ch_esp = /[^\w\s\-]/;
 
             if(create_sku_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
@@ -660,12 +670,15 @@
             switch (response.code) {
                 case 201:
                     window.location.href = `/products/${create_sku_inpt.value}`;
+                    e.disabled = false;
                     return;
                 case 400:
                     pushNotify("error", response.message != "" ? response.message : "Client Error")
+                    e.disabled = false;
                     return;
                 case 500:
                     pushNotify("error", "Server Error")
+                    e.disabled = false;
                     return;
             }
         }
@@ -843,7 +856,8 @@
             }
         }
 
-        async function addPartInfo() {
+        async function addPartInfo(e) {
+            e.disabled = true;
 
             if(part_type_select.value == "0") return pushNotify("error", "Selecione um tipo!");
             if(size_width_inpt.value == 0) return pushNotify("error", "O valor tem que ser maior que zero!");
@@ -866,12 +880,15 @@
                     size_width_inpt.value = "";
                     size_height_inpt.value = "";
                     size_deph_inpt.value = "";
+                    e.disabled = false;
                     return;
                 case 400:
                     pushNotify("error", "Client Error")
+                    e.disabled = false;
                     return;
                 case 500:
                     pushNotify("error", "Server Error")
+                    e.disabled = false;
                     return;
             }
         }
@@ -911,7 +928,8 @@
             }
         }
 
-        async function addDirectory() {
+        async function addDirectory(e) {
+            e.disabled = true;
 
             if(directory_type_select.value == "0") return pushNotify("error", "Selecione um tipo!");
             if(!validateDirectory(directory_inp.value)) return pushNotify("error", "Diretório Invalido");
@@ -930,12 +948,15 @@
                     toggleHoverContainer();
                     directory_inp.value = "";
                     description_dir_inpt.value = "";
+                    e.disabled = false;
                     return;
                 case 400:
                     pushNotify("error", "Client Error")
+                    e.disabled = false;
                     return;
                 case 500:
                     pushNotify("error", "Server Error")
+                    e.disabled = false;
                     return;
             }
         }
@@ -956,8 +977,100 @@
             }
         }
 
+        function Admin(){
+            const currentValue = localStorage.getItem('is_admin');
+
+            if (currentValue === null) {
+                localStorage.setItem('is_admin', 'false');
+            } else {
+                const newValue = currentValue === 'true' ? 'false' : 'true';
+                localStorage.setItem('is_admin', newValue);
+                main()
+            }
+        }
+
+        async function deleteProduct(){
+
+           if(!confirm("Deseja deletar esse produto?")) return
+
+            let response = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}`, "delete");
+
+            switch (response.code) {
+                case 200:
+                    window.location.href = "/products";
+                    return;
+                case 400:
+                    pushNotify("error", "Client Error")
+                    return;
+                case 500:
+                    pushNotify("error", "Server Error")
+                    return;
+            }
+        }
+
+        function removeNullKeys(obj) {
+            return Object.fromEntries(
+                Object.entries(obj).filter(([_, value]) => value !== null)
+            );
+        };
+
+
+        async function duplicateProduct(e){
+            e.disabled = true;
+
+            if(!confirm("Deseja criar um produto com esse?")){
+                e.disabled = false;
+                return;
+            }
+
+            toggleHoverContainer();
+
+            let product = await fetchInfo(`/api/v1/products/${product_id_holder.innerHTML}`);
+            product = product.data;
+
+            let base_product = {
+                sku: product.sku + "-DUPLICATED",
+                old_sku: product.old_sku,
+                description: product.description,
+                observation: product.observation,
+                gross_weight: product.gross_weight == 0 ? null : product.gross_weight,
+                net_weight: product.net_weight == 0 ? null : product.net_weight,
+            }
+
+            base_product = removeNullKeys(base_product);
+
+            await postData(`/api/v1/products`, "post", base_product);
+
+            let new_product = await fetchInfo(`/api/v1/products/${product.sku + "-DUPLICATED"}`);
+            new_product = new_product.data;
+
+            for (const part of product.parts) {
+                let base_part = {
+                    width: part.width,
+                    height: part.height,
+                    depth: part.depth,
+                    part_type_id: part.part_type_id,
+                }
+
+                await postData(`/api/v1/products/${new_product.id}/parts`, "post", base_part);
+            }
+
+            for (const directory of product.directories) {
+                let base_directory = {
+                    path: directory.path,
+                    label: directory.label,
+                    directory_type_id: directory.directory_type_id
+                }
+
+                await postData(`/api/v1/products/${new_product.id}/directories`, "post", base_directory);
+            }
+
+            window.location.href = `/products/${product.sku + "-DUPLICATED"}`
+        }
+
         main()
 
+      
     </script>
 </body>
 </html>
