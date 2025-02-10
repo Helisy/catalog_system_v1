@@ -697,9 +697,8 @@
             switch (response.code) {
                 case 200:
                     await main();
-                    pushNotify("success", "SKU alterado com sucesso");
-                    toggleHoverContainer();
-                    sku_update_inpt.value = "";
+                    // pushNotify("success", "SKU alterado com sucesso");
+                    window.location.replace(`/products/${product_id_holder.innerHTML}`);
                     return;
                 case 400:
                     pushNotify("error", "Client Error")
