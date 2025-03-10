@@ -97,7 +97,7 @@ router.get('/', async (req, res) => {
                     const [rows_1] = await db.query(`SELECT * FROM products ${sqlFilter}`);
                     if(rows_1.length > 0){
                         console.log(sqlFilter)
-                        products = rows_1;
+                        products = req.query.order_by === "sku" ? rows_1.sort(compareSku) : rows_1;
                         break;
                     }
                 } catch (error) {
@@ -776,5 +776,16 @@ router.delete('/:id/directories/:directory_id', param('id').isInt(), param('dire
         }
     );
 });
+
+
+function compareSku(a, b) {
+    const isNumeric = (value) => !isNaN(value);
+  
+    if (isNumeric(a.sku) && isNumeric(b.sku)) {
+      return parseInt(a.sku) - parseInt(b.sku);
+    }
+    
+    return a.sku.localeCompare(b.sku, undefined, { numeric: true });
+}  
 
 module.exports = router;

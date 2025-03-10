@@ -314,7 +314,7 @@
             //     return;
             // }
 
-            let data = await fetchInfo(`/api/v1/products?limit=50&order=asc&page=${currentPage}&query=${currentQuery}`);
+            let data = await fetchInfo(`/api/v1/products?limit=50&order_by=sku&order=asc&page=${currentPage}&query=${currentQuery}`);
             data = data.data;
 
             search_title.innerHTML = data.length < 1 ? `Nenhum resultado encontrado para "${currentQuery}"` : currentQuery
