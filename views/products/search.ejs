@@ -171,9 +171,9 @@
                 <i class="fa-solid fa-xmark" onclick="toggleHoverContainer()"></i>
             </div>
             <div class="card-body">
-                <div class="info">
+                <!-- <div class="info">
                     <p>O SKU deve começar com duas a quatro letras seguidas por quatro números, e as variações devem ser separadas por um hífen ("-"). Exemplo: "XX0000-PTO".</p>
-                </div>
+                </div> -->
                 <div class="inpt-title">SKU</div>
                 <div class="input-card">
                     <input type="text" id="create_sku_inpt" onkeyup="this.value = this.value.toUpperCase();"/>
@@ -375,9 +375,9 @@
 
             const regex_ch_esp = /[^\w\s\-]/;
 
-            if(create_sku_inpt.value.length < 6) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
-            if(!validateSKUNums(create_sku_inpt.value)) return pushNotify("error", "A contagem do SKU deve conter quatro numerais. EX: XX0000.");
-            if(regex_ch_esp.test(create_sku_inpt.value)) return pushNotify("error", 'O SKU não deve conter caracteres especiais, exceto "-".');
+            if(create_sku_inpt.value.length < 2) return pushNotify("error", "O SKU deve conter mais de 6 caracteres!");
+            // if(!validateSKUNums(create_sku_inpt.value)) return pushNotify("error", "A contagem do SKU deve conter quatro numerais. EX: XX0000.");
+            // if(regex_ch_esp.test(create_sku_inpt.value)) return pushNotify("error", 'O SKU não deve conter caracteres especiais, exceto "-".');
 
             let response = await postData(`/api/v1/products`, "post", {
                 sku: create_sku_inpt.value,

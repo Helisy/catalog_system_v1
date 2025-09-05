@@ -8,8 +8,8 @@ module.exports = {
             }
         },
         isLength: {
-            errorMessage: 'SKU must be at least 6 chars long',
-            options: { min: 6, max: 128  }
+            errorMessage: 'SKU must be at least 2 chars long',
+            options: { min: 2, max: 128  }
         }
     },
     old_sku: {
