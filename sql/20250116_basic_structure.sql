@@ -44,6 +44,18 @@ deleted_at DATETIME DEFAULT NULL,
 primary key(id)
 );
 
+CREATE TABLE part_type (
+  id bigint NOT NULL AUTO_INCREMENT,
+  label varchar(32) NOT NULL,
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+insert into part_type(label) values("Produto Final");
+insert into part_type(label) values("Subparte");
+
 -- insert into parts(width, height, depth, part_type_id, product_id) values(500, 30, 400, 1, 1);
 -- select 
 -- 	parts.id,
@@ -70,9 +82,6 @@ primary key(id)
 -- deleted_at DATETIME DEFAULT NULL,
 -- primary key(id)
 -- );
-
-insert into part_type(label) values("Produto Final");
-insert into part_type(label) values("Subparte");
 
 
 CREATE TABLE images(
@@ -143,5 +152,5 @@ insert into directory_type(label) values("Anúncio");
 
 
 
-select * from products WHERE deleted_at is null  LIMIT 1, 2;
+-- select * from products WHERE deleted_at is null  LIMIT 1, 2;
 
