@@ -293,7 +293,7 @@ router.post('/', checkSchema(postProductsValidation), async (req, res) => {
     let data = [];
     try {
 
-        const [rows] = await db.query(`select * from products where sku = ?`, [req.body.sku.trim()]);
+        const [rows] = await db.query(`select * from products where sku = ? and deleted_at is null`, [req.body.sku.trim()]);
 
         if(rows.length > 0){
             return apiClientError(req, res, [], `O SKU ${req.body.sku} já foi criado.`, 400)
