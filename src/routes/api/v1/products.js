@@ -65,8 +65,8 @@ router.get('/directory-types', async (req, res) => {
 const search_query =
 [
     "(sku LIKE '%#QUERY_STRING#%' OR old_sku LIKE '%#QUERY_STRING#%' OR description LIKE '%#QUERY_STRING#%')",
-    "sku REGEXP '^#QUERY_STRING#' OR old_sku REGEXP '^#QUERY_STRING#' OR description REGEXP '^#QUERY_STRING#'",
-    "MATCH (sku,old_sku,description) AGAINST ('#QUERY_STRING#*' IN BOOLEAN MODE)",
+    "(sku REGEXP '^#QUERY_STRING#' OR old_sku REGEXP '^#QUERY_STRING#' OR description REGEXP '^#QUERY_STRING#')",
+    "(MATCH (sku,old_sku,description) AGAINST ('#QUERY_STRING#*' IN BOOLEAN MODE))",
 ];
 
 router.get('/', async (req, res) => {
