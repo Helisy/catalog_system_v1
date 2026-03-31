@@ -1,3 +1,11 @@
+# ⚠️ Attention
+
+This system was developed for internal company use only.  
+For other purposes, please switch to the [`general-use`](https://github.com/Helisy/catalog_system_v1/tree/general-use) branch.
+
+Este sistema foi desenvolvido para uso interno da empresa.  
+Para outros fins, utilize a branch [`general-use`](https://github.com/Helisy/catalog_system_v1/tree/general-use).
+
 # 🛠️ Project Setup
 
 Before starting the app, make sure to create a .env file in the root directory with the following content:
